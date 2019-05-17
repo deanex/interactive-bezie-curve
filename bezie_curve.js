@@ -71,6 +71,19 @@ function createPoint(x, y, onPositionChanged) {
 	function onDragMove() {
 		if (this.dragging) {
 			const newPosition = this.data.getLocalPosition(this.parent);
+			
+			if (newPosition.x < 0 ) {
+				newPosition.x = 0
+			}
+			if (newPosition.y < 0) {
+				newPosition.y = 0
+			}
+			if (newPosition.x > appWidth) {
+				newPosition.x = appWidth-1
+			}
+			if (newPosition.y > appHeight) {
+				newPosition.y = appHeight-1
+			}
 			onPositionChanged(newPosition)
 			this.x = newPosition.x;
 			this.y = newPosition.y;
@@ -130,7 +143,6 @@ function createBezie(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2) {
 		saved.y2 = newPosition.y
 		updateCurve(saved)
 		updateEndLine(saved)
-		console.log(saved)
 	})
 
 	function updateStartLine(props) {
