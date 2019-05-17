@@ -47,7 +47,7 @@ function createGrid(lineStyle, width, height, hLines, vLines) {
 
 function createPoint(x, y, onPositionChanged) {	
 	let circle = new Graphics()
-	circle.lineStyle(2, 0xFF3300, 1);
+	circle.lineStyle(2, 0x3300ff, .6);
 	circle.beginFill(0xffffff, 1);
 	circle.drawCircle(0,0,5)
 	circle.endFill();
@@ -94,9 +94,9 @@ function createBezie(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2) {
 	let curve = new Graphics();
 	curve.lineStyle(4, 0x00FFFF, 1)
 	let startLine = new Graphics();
-	startLine.lineStyle(4, 0xFFccFF, 1);
+	startLine.lineStyle(2, 0x33aa33, 0.3);
 	let endLine = new Graphics();
-	endLine.lineStyle(4, 0xFFccFF, 1);
+	endLine.lineStyle(2, 0x33aa33, 0.3);
 
 	// Save initial curve props for future updates 
 	let saved = {
@@ -130,6 +130,7 @@ function createBezie(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2) {
 		saved.y2 = newPosition.y
 		updateCurve(saved)
 		updateEndLine(saved)
+		console.log(saved)
 	})
 
 	function updateStartLine(props) {
@@ -168,7 +169,7 @@ var grid = createGrid(lineStyle, appWidth, appHeight, horizontalLines, verticalL
 
 app.stage.addChild(grid)
 
-var bezie = createBezie(100, 100,  100,300,  300,300,  600, 100)
+var bezie = createBezie(400, 75,  193,210,  656,330,  318, 512)
 
 app.stage.addChild(bezie)
 
