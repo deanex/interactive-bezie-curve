@@ -45,9 +45,52 @@ function createGrid(lineStyle, width, height, hLines, vLines) {
 	return grid
 }
 
+function createPoint(x, y) {	
+	let circle = new Graphics()
+	circle.lineStyle(2, 0xFF3300, 1);
+	circle.beginFill(0xffffff, 1);
+	circle.drawCircle(0,0,5)
+	circle.endFill();
+	circle.x = x;
+	circle.y = y;
+	circle.interactive = true;
+	circle.buttonMode = true;
+	circle
+		.on('pointerdown', onDragStart)
+		.on('pointerup', onDragEnd)
+		.on('pointerupoutside', onDragEnd)
+		.on('pointermove', onDragMove);
+	function onDragStart(event) {
+		// store a reference to the data
+		// the reason for this is because of multitouch
+		// we want to track the movement of this particular touch
+		this.data = event.data;
+		this.alpha = 0.5;
+		this.dragging = true;
+	}
+	function onDragMove() {
+		if (this.dragging) {
+			const newPosition = this.data.getLocalPosition(this.parent);
+			this.x = newPosition.x;
+			this.y = newPosition.y;
+		}
+	}
+	function onDragEnd() {
+		this.alpha = 1;
+		this.dragging = false;
+		// set the interaction data to null
+		this.data = null;
+	}
+
+	return circle
+}
+
+// Square grid
 let lineStyle = [2, 0x0, 0.07]
 var horizontalLines = 20
-var verticalLines = appHeight / (appWidth/horizontalLines) // for squares
+var verticalLines = appHeight / (appWidth/horizontalLines) // formula for squares
 var grid = createGrid(lineStyle, appWidth, appHeight, horizontalLines, verticalLines)
 
 app.stage.addChild(grid)
+app.stage.addChild(createPoint(100,100))
+
