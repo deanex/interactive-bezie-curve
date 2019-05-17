@@ -45,7 +45,7 @@ function createGrid(lineStyle, width, height, hLines, vLines) {
 	return grid
 }
 
-function createPoint(x, y) {	
+function createPoint(x, y, onPositionChanged) {	
 	let circle = new Graphics()
 	circle.lineStyle(2, 0xFF3300, 1);
 	circle.beginFill(0xffffff, 1);
@@ -70,8 +70,8 @@ function createPoint(x, y) {
 	}
 	function onDragMove() {
 		if (this.dragging) {
-			console.log(this.parent)
 			const newPosition = this.data.getLocalPosition(this.parent);
+			onPositionChanged(newPosition)
 			this.x = newPosition.x;
 			this.y = newPosition.y;
 		}
@@ -88,13 +88,56 @@ function createPoint(x, y) {
 // cp1x - The x-axis coordinate of the first control point.
 // cp2x - The x-axis coordinate of the second control point.
 // x - The x-axis coordinate of the end point.
-function createBezie(cp1x, cp1y, cp2x, cp2y, x, y) {
+function createBezie(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2) {
+	let container = new Container()
+
+	
 	let curve = new Graphics();
 	curve.lineStyle(4, 0x00FFFF, 1)
-	curve.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-	curve.x = 32;
-	curve.y = 32;
-	return curve
+	curve.moveTo(x1,y1)
+	curve.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+
+	// Save initial curve props for future updates 
+	let saved = {
+		x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2
+	}
+
+
+	let startPoint = createPoint(x1, y1, newPosition => {
+		saved.x1 = newPosition.x
+		saved.y1 = newPosition.y
+		updateCurve(saved)
+	})
+	let startControlPoint = createPoint(cp1x, cp1y, newPosition => {
+		saved.cp1x = newPosition.x
+		saved.cp1y = newPosition.y
+		updateCurve(saved)
+	})
+	let endControlPoint = createPoint(cp2x, cp2y, newPosition => {
+		saved.cp2x = newPosition.x
+		saved.cp2y = newPosition.y
+		updateCurve(saved)
+	})
+	let endPoint = createPoint(x2, y2, newPosition => {
+		saved.x2 = newPosition.x
+		saved.y2 = newPosition.y
+		updateCurve(saved)
+	})
+
+	function updateCurve(props) {
+		curve.clear()
+		curve.moveTo(props.x1,props.y1)
+		curve.bezierCurveTo(props.cp1x, props.cp1y, props.cp2x, props.cp2y, props.x2, props.y2);
+	}
+
+	container.addChild(curve)
+	container.addChild(startControlPoint)
+	container.addChild(endControlPoint)
+	container.addChild(startPoint)
+	container.addChild(endPoint)
+	
+
+	return container
 }
 
 // Square grid
@@ -104,9 +147,8 @@ var verticalLines = appHeight / (appWidth/horizontalLines) // formula for square
 var grid = createGrid(lineStyle, appWidth, appHeight, horizontalLines, verticalLines)
 
 app.stage.addChild(grid)
-app.stage.addChild(createPoint(100,100))
 
-var bezie = createBezie(0, 100,  0,100, 300, 0)
-bezie.position.set(130,130)
+var bezie = createBezie(100, 100,  100,300,  300,300,  600, 100)
+
 app.stage.addChild(bezie)
 
