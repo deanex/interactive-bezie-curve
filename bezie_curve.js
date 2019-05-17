@@ -91,45 +91,65 @@ function createPoint(x, y, onPositionChanged) {
 function createBezie(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2) {
 	let container = new Container()
 
-	
 	let curve = new Graphics();
 	curve.lineStyle(4, 0x00FFFF, 1)
-	curve.moveTo(x1,y1)
-	curve.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+	let startLine = new Graphics();
+	startLine.lineStyle(4, 0xFFccFF, 1);
+	let endLine = new Graphics();
+	endLine.lineStyle(4, 0xFFccFF, 1);
 
 	// Save initial curve props for future updates 
 	let saved = {
 		x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2
 	}
-
+	
+	updateCurve(saved)
+	updateStartLine(saved)
+	updateEndLine(saved)
 
 	let startPoint = createPoint(x1, y1, newPosition => {
 		saved.x1 = newPosition.x
 		saved.y1 = newPosition.y
 		updateCurve(saved)
+		updateStartLine(saved)
 	})
 	let startControlPoint = createPoint(cp1x, cp1y, newPosition => {
 		saved.cp1x = newPosition.x
 		saved.cp1y = newPosition.y
 		updateCurve(saved)
+		updateStartLine(saved)
 	})
 	let endControlPoint = createPoint(cp2x, cp2y, newPosition => {
 		saved.cp2x = newPosition.x
 		saved.cp2y = newPosition.y
 		updateCurve(saved)
+		updateEndLine(saved)
 	})
 	let endPoint = createPoint(x2, y2, newPosition => {
 		saved.x2 = newPosition.x
 		saved.y2 = newPosition.y
 		updateCurve(saved)
+		updateEndLine(saved)
 	})
 
+	function updateStartLine(props) {
+		startLine.clear()
+		startLine.moveTo(props.x1, props.y1);
+		startLine.lineTo(props.cp1x, props.cp1y);
+	}
+	function updateEndLine(props) {
+		endLine.clear()
+		endLine.moveTo(props.x2, props.y2);
+		endLine.lineTo(props.cp2x, props.cp2y);
+	}
 	function updateCurve(props) {
 		curve.clear()
 		curve.moveTo(props.x1,props.y1)
 		curve.bezierCurveTo(props.cp1x, props.cp1y, props.cp2x, props.cp2y, props.x2, props.y2);
 	}
 
+	container.addChild(startLine)
+	container.addChild(endLine)
 	container.addChild(curve)
 	container.addChild(startControlPoint)
 	container.addChild(endControlPoint)
