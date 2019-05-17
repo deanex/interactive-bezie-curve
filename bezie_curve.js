@@ -70,6 +70,7 @@ function createPoint(x, y) {
 	}
 	function onDragMove() {
 		if (this.dragging) {
+			console.log(this.parent)
 			const newPosition = this.data.getLocalPosition(this.parent);
 			this.x = newPosition.x;
 			this.y = newPosition.y;
@@ -81,8 +82,19 @@ function createPoint(x, y) {
 		// set the interaction data to null
 		this.data = null;
 	}
-
 	return circle
+}
+
+// cp1x - The x-axis coordinate of the first control point.
+// cp2x - The x-axis coordinate of the second control point.
+// x - The x-axis coordinate of the end point.
+function createBezie(cp1x, cp1y, cp2x, cp2y, x, y) {
+	let curve = new Graphics();
+	curve.lineStyle(4, 0x00FFFF, 1)
+	curve.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+	curve.x = 32;
+	curve.y = 32;
+	return curve
 }
 
 // Square grid
@@ -93,4 +105,8 @@ var grid = createGrid(lineStyle, appWidth, appHeight, horizontalLines, verticalL
 
 app.stage.addChild(grid)
 app.stage.addChild(createPoint(100,100))
+
+var bezie = createBezie(0, 100,  0,100, 300, 0)
+bezie.position.set(130,130)
+app.stage.addChild(bezie)
 
